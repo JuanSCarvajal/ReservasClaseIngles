@@ -1,39 +1,42 @@
 import React from "react";
 import { Pressable, Text, StyleSheet } from "react-native";
-import { spacing, colors, typography } from "../theme";
+import { Colors, Spacing } from "../constants/theme";
 
-export default function NivelFiltro(etiqueta, activo, onPress) {
+export default function NivelFiltro({ etiqueta, activo, onPress }) {
   return (
-    <Pressable onPress={onPress} 
-    style={({pressed})=>[
-        style.chip,activo && style.chipActivo, pressed && {opacity: 0.8}
-        
-        
-    ]}
-> 
-      <Text style={[style.texto, activo && style.textoActivo]}>{etiqueta} </Text>
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.chip,
+        activo && styles.chipActivo,
+        pressed && { opacity: 0.8 },
+      ]}
+    >
+      <Text style={[styles.texto, activo && styles.textoActivo]}>{etiqueta}</Text>
     </Pressable>
-
-
   );
 }
 
-
-const style = StyleSheet.create({
+const styles = StyleSheet.create({
   chip: {
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.lg,
-    borderRadius: radius.full,
-    backgroundColor: colors.superficie,
+    paddingVertical: Spacing.one,
+    paddingHorizontal: Spacing.three,
+    borderRadius: 20,
+    backgroundColor: Colors.light.backgroundElement,
     borderWidth: 1,
-    borderColor: colors.borde,
-    marginRight: spacing.sm,
+    borderColor: Colors.light.backgroundSelected,
+    marginRight: Spacing.two,
   },
   chipActivo: {
-    backgroundColor: colors.primario,
-    borderColor: colors.primario,
+    backgroundColor: Colors.light.text,
+    borderColor: Colors.light.text,
   },
-  texto: { fontSize: 13, fontWeight: '600', color: colors.textoSuave },
-  textoActivo: { color: '#b41111' },
+  texto: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: Colors.light.textSecondary,
+  },
+  textoActivo: {
+    color: Colors.light.background,
+  },
 });
-

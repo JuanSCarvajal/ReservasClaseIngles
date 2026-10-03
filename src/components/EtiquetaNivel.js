@@ -1,18 +1,24 @@
-import { Text, View } from "react-native";
+import React from "react";
+import { View, Text, StyleSheet } from "react-native";
+import { Colors } from "../constants/theme";
 
 export default function EtiquetaNivel({ nivel }) {
   return (
-    <View style={styles.contenedor}>
-      <Text style={styles.texto}> {nivel} </Text>
+    <View style={styles.badge}>
+      <Text style={styles.texto}>{nivel}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  contenedor: {
-    alignSelf: "flex-start",
-    paddingVertical: 3,
-    paddingHorizontal: spacing.md,
+  badge: {
+    backgroundColor: Colors.light.backgroundSelected,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
   },
-  texto: { fontSize: 9, fontWeight: "600", letterSpacing: 0.5 },
+  texto: {
+    color: Colors.light.text,
+    fontSize: 12,
+  },
 });

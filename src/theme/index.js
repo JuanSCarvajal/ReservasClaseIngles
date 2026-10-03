@@ -1,3 +1,4 @@
+import { Colors } from "../constants/theme";
 
 export const color = {
   fondo: "#F5F5F5",
@@ -15,8 +16,8 @@ export const spacing = {
 };
 
 export const typography = {
-  titulo: { fontSize: 26, fontWeight: 800, color: colors.texto },
-  subtitulo: { fontSize: 18, fontWeight: 600, color: colors.texto },
+  titulo: { fontSize: 26, fontWeight: 800, color: Colors.texto },
+  subtitulo: { fontSize: 18, fontWeight: 600, color: Colors.texto },
 };
 
 export default { color, spacing, typography };
