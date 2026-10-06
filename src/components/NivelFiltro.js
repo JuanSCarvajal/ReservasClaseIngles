@@ -9,7 +9,7 @@ export default function NivelFiltro({ etiqueta, activo, onPress }) {
       style={({ pressed }) => [
         styles.chip,
         activo && styles.chipActivo,
-        pressed && { opacity: 0.8 },
+        pressed && { opacity: 0.8},
       ]}
     >
       <Text style={[styles.texto, activo && styles.textoActivo]}>{etiqueta}</Text>
@@ -19,22 +19,26 @@ export default function NivelFiltro({ etiqueta, activo, onPress }) {
 
 const styles = StyleSheet.create({
   chip: {
-    paddingVertical: Spacing.one,
-    paddingHorizontal: Spacing.three,
-    borderRadius: 20,
-    backgroundColor: Colors.light.backgroundElement,
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderRadius: 15,
+    backgroundColor: "#fdfeff",
     borderWidth: 1,
-    borderColor: Colors.light.backgroundSelected,
-    marginRight: Spacing.two,
+    borderColor: "#0ebd34",
+    marginRight: 10,
+    alignSelf: "flex-start",
+    justifyContent: "center",
+    alignItems: "center",
   },
   chipActivo: {
-    backgroundColor: Colors.light.text,
+    backgroundColor: "#0d8b20",
     borderColor: Colors.light.text,
   },
   texto: {
-    fontSize: 13,
+    fontSize: 15,
     fontWeight: "600",
     color: Colors.light.textSecondary,
+    includeFontPadding: false,
   },
   textoActivo: {
     color: Colors.light.background,
