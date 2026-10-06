@@ -1,7 +1,10 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import ClasesScreen from "../screens/ClasesScreen";
-import { Colors } from "../theme";
+import DetalleClaseScreen from '../screens/DetalleClaseScreen';
+import { color} from "../theme";
+
+
 
 const Stack = createNativeStackNavigator();
 
@@ -17,8 +20,15 @@ export default function ClasesStack() {
       <Stack.Screen
         name="Clases"
         component={ClasesScreen}
-        options={{ headerShown: false }}
-      />
+        options={{ headerShown: false }}/>
+
+        <Stack.Screen
+          name="DetalleClase"
+          component={DetalleClaseScreen}
+          options={{titulo:"Detalle",headerBackTitle: "Atras"}}/>
+        
+
+
     </Stack.Navigator>
   );
 }

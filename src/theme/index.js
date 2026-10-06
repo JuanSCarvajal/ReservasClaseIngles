@@ -16,8 +16,11 @@ export const spacing = {
 };
 
 export const typography = {
-  titulo: { fontSize: 26, fontWeight: 800, color: Colors.texto },
+  titulo: { fontSize: 26, fontWeight: 600, color: Colors.texto },
   subtitulo: { fontSize: 18, fontWeight: 600, color: Colors.texto },
+  cuerpo: { fontSize: 14, fontWeight: 400, color: Colors.texto },
+  secundario: { fontSize: 12, fontWeight: 400 },
+  etiqueta: { fontSize: 10, fontWeight: 600 },
 };
 
 export default { color, spacing, typography };
