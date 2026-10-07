@@ -20,6 +20,7 @@ export default function DetalleClaseScreen({ route, navigation }) {
   const duracion = clase?.duración || clase?.duracion;
   const profeObj = clase?.profesor || clase?.profesora;
   const nombreProfe = profeObj?.nombre ? profeObj.nombre.trim() : '';
+  const fotoProfe = profeObj?.foto ? profeObj.foto.trim() : '';
 
   useLayoutEffect(() => { if (titulo) { navigation.setOptions({ title: titulo }); } }, [navigation, titulo]);
 
@@ -78,7 +79,11 @@ export default function DetalleClaseScreen({ route, navigation }) {
 
             {nombreProfe ? (
               <View style={styles.datoItem}>
+                {fotoProfe?(
+                    <Image source= {{uri: fotoProfe}} style={styles.fotoProfesor}/>
+                ): (
                 <Ionicons name="person-outline" size={18} color={color.primario} />
+                )}
                 <Text style={typography.secundario}>{nombreProfe}</Text>
               </View>
             ) : null}
@@ -186,7 +191,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: color.card || '#FFFFFF',
     borderTopWidth: 1,
-    borderTopColor: color.border || "#10ca38",
+    borderTopColor:  "#10ca38",
   },
   precio: {
     ...typography.subtitulo,
@@ -204,4 +209,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
   },
+  fotoProfesor: {
+  width: 60,
+  height: 60,
+  borderRadius: 14,
+  borderWidth: 1,
+  borderColor: '#E5E7EB',
+},
 });
