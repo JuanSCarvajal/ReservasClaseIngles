@@ -11,6 +11,7 @@ import { CLASES, NIVELES } from "../data/classes";
 import { Colors, Spacing, spacing, Radius } from "../constants/theme";
 import { typography } from "@/theme";
 
+
 export default function ClasesScreen({ navigation }) {
   const insets = useSafeAreaInsets();
   const { columnas, paddingHorizontal } = useResponsive();
@@ -21,9 +22,8 @@ export default function ClasesScreen({ navigation }) {
     const textoBusqueda = Busqueda.trim().toLowerCase();
     return CLASES.filter((Clase) => {
       const coincideNivel = nivel === "Todos" || Clase.nivel === nivel;
-      const tituloClase = Clase.titulo || Clase.título || "";
-      const coincideTextoBusqueda =
-        textoBusqueda === "" ||
+      const tituloClase = Clase.nivel;
+      const coincideTextoBusqueda =  textoBusqueda === "" ||
         tituloClase.toLowerCase().includes(textoBusqueda) ||
         Clase.profesor?.nombre?.toLowerCase().includes(textoBusqueda);
       return coincideNivel && coincideTextoBusqueda;
@@ -31,48 +31,6 @@ export default function ClasesScreen({ navigation }) {
   }, [nivel, Busqueda]);
 
   
-  const renderHeader = () => (
-    <View style={{ marginBottom: spacing.md }}>
-      <Text style={typography.titulo}>Aplicación de clases de inglés</Text>
-
-      <View style={styles.searchBox}>
-        <Ionicons name="search" size={15} color={Colors.light.textSecondary} />
-        <TextInput
-          style={styles.input}
-          placeholder="Buscar por nivel"
-          placeholderTextColor={Colors.light.textSecondary}
-          value={Busqueda}
-          onChangeText={setBusqueda}
-          autoCorrect={false}
-        />
-
-        {Busqueda.length > 0 && (
-          <Ionicons
-            name="close-circle"
-            size={15}
-            color={Colors.light.textSecondary}
-            onPress={() => setBusqueda("")}
-          />
-        )}
-      </View>
-
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={{ flexGrow: 0, marginBottom: 12 }}
-      >
-        {NIVELES.map((item) => (
-          <NivelFiltro
-            key={item}
-            etiqueta={item}
-            activo={item === nivel}
-            onPress={() => setNivel(item)}
-          />
-        ))}
-      </ScrollView>
-    </View>
-  );
-
   return (
     <View style={[styles.pantalla, { paddingTop: insets.top + spacing.md }]}>
       <FlatList
@@ -80,14 +38,56 @@ export default function ClasesScreen({ navigation }) {
         keyExtractor={(item) => item.id}
         numColumns={columnas}
         key={columnas}
-        ListHeaderComponent={renderHeader} 
+
+        ListHeaderComponent={
+          <View style={{ marginBottom: spacing.md }}>
+            <Text style={typography.titulo}>Aplicación de clases de inglés</Text>
+
+            <View style={styles.searchBox}>
+              <Ionicons name="search" size={15} color={Colors.light.textSecondary} />
+              <TextInput
+                style={styles.input}
+                placeholder="Buscar por nivel" 
+                placeholderTextColor={Colors.light.textSecondary}
+                value={Busqueda}
+                onChangeText={setBusqueda}
+                autoCorrect={false}
+              />
+
+              {Busqueda.length > 0 && (
+                <Ionicons
+                  name="close-circle"
+                  size={15}
+                  color={Colors.light.textSecondary}
+                  onPress={() => setBusqueda("")}
+                />
+              )}
+            </View>
+
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={{ flexGrow: 0, marginBottom: 12 }}
+            >
+              {NIVELES.map((item) => (
+                <NivelFiltro
+                  key={item}
+                  etiqueta={item}
+                  activo={item === nivel}
+                  onPress={() => setNivel(item)}
+                />
+              ))}
+            </ScrollView>
+          </View>
+        }
+
         renderItem={({ item }) => (
           <Card
             titulo={item.titulo || item.título}
             descripcion={item.descripcion || item.descripción}
             nivel={item.nivel}
             imagen={item.imagen}
-            duracion={item.duracion}
+            duracion={item.duracion }
             clase={item}
             onPress={() => navigation.navigate("DetalleClase", { clase: item })}
           />
@@ -100,7 +100,7 @@ export default function ClasesScreen({ navigation }) {
         }
         contentContainerStyle={{
           paddingHorizontal: paddingHorizontal || spacing.md,
-          paddingBottom: 200, 
+          paddingBottom: 45,
           flexGrow: 1,
         }}
       />

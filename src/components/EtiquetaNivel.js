@@ -6,6 +6,8 @@ export default function EtiquetaNivel({ nivel }) {
   return (
     <View style={styles.badge}>
       <Text style={styles.texto}>{nivel}</Text>
+      
+
     </View>
   );
 }
@@ -21,4 +23,5 @@ const styles = StyleSheet.create({
     color: Colors.light.text,
     fontSize: 12,
   },
+
 });
