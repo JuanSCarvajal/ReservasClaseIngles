@@ -29,7 +29,8 @@ export function ReservaProvider({children}){
 
     useEffect(()=>{
         if(Cargando )return; //Evita sobreescribir el arreglo
-        AsyncStorage.setItem(CLAVE_RESERVAS, JSON.stringify(Reservas)).catch((error)=>console.log('ocurrio un error guardando la reserva' , error)
+        AsyncStorage.setItem(CLAVE_RESERVAS, JSON.stringify(Reservas)).catch((error)=>
+            console.log('ocurrio un error guardando la reserva' , error)
         
     
     )
