@@ -2,6 +2,7 @@ import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import ClasesScreen from "../screens/ClasesScreen";
 import DetalleClaseScreen from '../screens/DetalleClaseScreen';
+import ConfirmarReservaScreen from '../screens/ConfirmarReservaScreen';
 import { color} from "../theme";
 
 
@@ -26,6 +27,11 @@ export default function ClasesStack() {
           name="DetalleClase"
           component={DetalleClaseScreen}
           options={{titulo:"Detalle",headerBackTitle: "Atras"}}/>
+
+        <Stack.Screen 
+        name='ConfirmarReserva'
+        component={ConfirmarReservaScreen}
+        options={''}/>
         
 
 

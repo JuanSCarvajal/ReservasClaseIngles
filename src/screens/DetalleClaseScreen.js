@@ -1,7 +1,10 @@
-import React, { useLayoutEffect, useState } from 'react';
-import { View, Text, Image, ScrollView, StyleSheet, Pressable } from 'react-native';
+import React, { useLayoutEffect, useState,useContext} from 'react';
+import {ReservasContext} from '../context/ReservasContext';
+import { View, Text, Image, ScrollView, StyleSheet, Pressable, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import ConfirmarReservaScreen from '../screens/ConfirmarReservaScreen';
+
 
 import EtiquetaNivel from '../components/EtiquetaNivel';
 import  useResponsive  from '../hooks/useResponsive';
@@ -22,6 +25,7 @@ export default function DetalleClaseScreen({ route, navigation }) {
   const nombreProfe = profeObj?.nombre ? profeObj.nombre.trim() : '';
   const fotoProfe = profeObj?.foto ? profeObj.foto.trim() : '';
   const [Horario, setHorario] = useState (null)
+  const { agregarReserva } = useContext(ReservasContext);
 
   useLayoutEffect(() => { if (titulo) { navigation.setOptions({ title: titulo }); } }, [navigation, titulo]);
 
@@ -153,14 +157,26 @@ export default function DetalleClaseScreen({ route, navigation }) {
         </View>
 
         <Pressable
-          style={({ pressed }) => [
-            styles.botonReserva,
-            pressed && { opacity: 0.8 },
-          ]}
-          onPress={() => alert(`Reserva iniciada para ${titulo}`)}
-        >
-          <Text style={styles.textoBoton}>Reservar</Text>
-        </Pressable>
+  style={({ pressed }) => [
+    styles.botonReserva,
+    pressed && { opacity: 0.8 },
+  ]}
+  onPress={() => {
+    if (!Horario) {
+      Alert.alert('Horario requerido', 'Por favor, selecciona un horario antes de continuar.');
+      return;
+    }
+
+    navigation.navigate('ConfirmarReserva', {
+      clase: clase,
+      horarioSeleccionado: Horario,
+      precio: clase.precio,
+      nivel: clase.nivel,
+    });
+  }}
+>
+  <Text style={styles.textoBoton}>Reservar</Text>
+</Pressable>
       </View>
     </View>
   );
