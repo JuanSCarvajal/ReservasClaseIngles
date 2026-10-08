@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import { View, Text, Image, ScrollView, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -21,6 +21,7 @@ export default function DetalleClaseScreen({ route, navigation }) {
   const profeObj = clase?.profesor || clase?.profesora;
   const nombreProfe = profeObj?.nombre ? profeObj.nombre.trim() : '';
   const fotoProfe = profeObj?.foto ? profeObj.foto.trim() : '';
+  const [Horario, setHorario] = useState (null)
 
   useLayoutEffect(() => { if (titulo) { navigation.setOptions({ title: titulo }); } }, [navigation, titulo]);
 
@@ -96,20 +97,44 @@ export default function DetalleClaseScreen({ route, navigation }) {
 
 
           {clase.horarios && clase.horarios.length > 0 && (
-            <View>
-              <Text style={[typography.subtitulo, { marginBottom: spacing.md }]}>
-                Elige tu horario
-              </Text>
-              <View style={styles.contenedorHorarios}>
-                {clase.horarios.map((horario, index) => (
-                  <View key={index} style={styles.chipHorario}>
-                    <Ionicons name="time-outline" size={14} color={color.primario} />
-                    <Text style={typography.secundario}>{horario.trim()}</Text>
-                  </View>
-                ))}
-              </View>
-            </View>
-          )}
+  <View>
+    <Text style={[typography?.subtitulo, { marginBottom: spacing?.md || 12 }]}>
+      Elige tu horario
+    </Text>
+    <View style={styles.contenedorHorarios}>
+      {clase.horarios.map((horario, index) => {
+        const textoHorario = horario.trim();
+        const esSeleccionado = Horario === textoHorario;
+
+        return (
+          <Pressable
+            key={index}
+            style={({ pressed }) => [
+              styles.chipHorario,
+              esSeleccionado && styles.chipHorario,
+              pressed && { opacity: 0.8 },
+            ]}
+            onPress={() => setHorario(textoHorario)}
+          >
+            <Ionicons
+              name="time-outline"
+              size={14}
+              color={esSeleccionado ? "#10ca38" : (color?.primario || "#10ca38")}
+            />
+            <Text
+              style={[
+                typography?.secundario,
+                esSeleccionado && styles.textoChipSeleccionado,
+              ]}
+            >
+              {textoHorario}
+            </Text>
+          </Pressable>
+        );
+      })}
+    </View>
+  </View>
+)}
         </View>
       </ScrollView>
 
@@ -215,5 +240,13 @@ const styles = StyleSheet.create({
   borderRadius: 14,
   borderWidth: 1,
   borderColor: '#E5E7EB',
+},
+Horario: {
+  backgroundColor: '#007AFF',
+  borderColor:  '#007AFF',
+},
+textoChipSeleccionado: {
+  color: "#10ca38",
+  fontWeight: 'bold',
 },
 });
