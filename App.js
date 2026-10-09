@@ -4,6 +4,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { AppProvider } from "./src/context/AppContext";
 import MainNavigator from "./src/navigation/ClasesStack"; 
+
 import { Colors } from "./src/constants/theme";
 
 const temaNavegacion = {

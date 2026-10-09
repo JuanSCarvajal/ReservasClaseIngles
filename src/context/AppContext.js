@@ -3,19 +3,58 @@ import React, { createContext, useState } from 'react';
 export const AppContext = createContext();
 
 export function AppProvider({ children }) {
-  const [Usuario, setUsuario] = useState(null); 
+  const [usuario, setUsuario] = useState(null); 
   const [reservas, setReservas] = useState([]);
+  const [usuariosRegistrados, setUsuariosRegistrados] = useState([]);
 
-  const Registrar = (nuevoUsuario) => {
-    setUsuario(nuevoUsuario);
+  // 1. Guardar nuevo usuario en la lista Y en la sesión activa
+  const registrarUsuario = (nuevoUsuario) => {
+    const emailLimpio = nuevoUsuario.email.trim().toLowerCase();
+
+    // Validar si ya existe
+    const yaExiste = usuariosRegistrados.some(
+      (u) => u.email.trim().toLowerCase() === emailLimpio
+    );
+
+    if (yaExiste) {
+      return { exito: false, mensaje: 'El correo electrónico ya está registrado.' };
+    }
+
+    const usuarioAInsertar = { ...nuevoUsuario, email: emailLimpio };
+    
+    // Guardamos en la lista de usuarios
+    setUsuariosRegistrados((prev) => [...prev, usuarioAInsertar]);
+    // Iniciamos sesión automáticamente
+    setUsuario(usuarioAInsertar);
+
+    return { exito: true };
   };
 
-  const Actualizar = ({ email, telefono }) => {
+  // 2. Iniciar sesión buscando en usuariosRegistrados
+  const iniciarSesion = (email) => {
+    const usuarioEncontrado = usuariosRegistrados.find(
+      (u) => u.email.trim().toLowerCase() === email.trim().toLowerCase()
+    );
+
+    if (!usuarioEncontrado) {
+      return { exito: false, mensaje: 'El correo ingresado no está registrado.' };
+    }
+
+    setUsuario(usuarioEncontrado);
+    return { exito: true };
+  };
+
+  const actualizarUsuario = ({ email, telefono }) => {
     setUsuario((prev) => ({
       ...prev,
       email,
       telefono,
     }));
+  };
+
+  const cerrarSesion = () => {
+    setUsuario(null);
+    setReservas([]);
   };
 
   const agregarReserva = (clase, horario) => {
@@ -48,9 +87,12 @@ export function AppProvider({ children }) {
   return (
     <AppContext.Provider
       value={{
-        Usuario,
-        Registrar,
-        Actualizar,
+        usuario,
+        usuariosRegistrados,
+        registrarUsuario,
+        iniciarSesion,
+        actualizarUsuario,
+        cerrarSesion,
         reservas,
         agregarReserva,
         cancelarReserva,

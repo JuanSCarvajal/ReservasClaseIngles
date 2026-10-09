@@ -1,162 +1,206 @@
-import React, { useContext, useState } from "react";
-import { View,Text,Image,StyleSheet,Alert,TextInput,Button,} from "react-native";
-import { AppContext } from "../context/AppContext";
+import React, { useState, useContext } from 'react';
+import { View, Text, TextInput, Pressable, Alert, StyleSheet } from 'react-native';
+import { AppContext } from '../context/AppContext';
 
 export default function PerfilScreen() {
-  const { Usuario, Registrar, Actualizar, actualizarUsuario } = useContext(AppContext);
+  // Validación de seguridad para evitar que crashee si el Provider no está listo
+  const context = useContext(AppContext);
 
-  const [nombre, setNombre] = useState("");
-  const [apellido, setApellido] = useState("");
-  const [telefono, setTelefono] = useState("");
-  const [email, setEmail] = useState("");
-  const [foto, setFoto] = useState( "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSDZF78tfSWvwzUFV2t8DaAGY4xfY0hl_sY2XjqqtxHew&s=10"
-  );
-
-  const [editEmail, setEditEmail] = useState(Usuario?.email || "");
-  const [editTelefono, setEditTelefono] = useState(Usuario?.telefono || "");
-  const [editando, setEditando] = useState(false);
-
-  // Guardar nuevo registro
-  const handleRegistrar = () => {
-    if (!nombre || !apellido || !telefono || !email) {
-      Alert.alert("Atención", "Por favor completa todos los campos.");
-      return;
-    }
-
-    const funcionRegistrar = Registrar;
-    if (funcionRegistrar) {
-      funcionRegistrar({
-        nombre,
-        apellido,
-        telefono,
-        email,
-        foto,
-      });
-      Alert.alert("Éxito", "Usuario registrado correctamente.");
-    }
-  };
-
-  const GuardarCambios = () => {
-    const funcionActualizar = Actualizar || actualizarUsuario;
-    if (funcionActualizar) {
-      funcionActualizar({
-        email: editEmail,
-        telefono: editTelefono,
-      });
-      setEditando(false);
-      Alert.alert("Éxito", "Datos actualizados correctamente.");
-    }
-  };
-
-  // CASO 1: Si NO existe un registro de usuario
-  if (!Usuario) {
+  if (!context) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.title}>Registrar Perfil</Text>
-
-        <TextInput
-          style={styles.input}
-          placeholder="Nombre"
-          value={nombre}
-          onChangeText={setNombre}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Apellido"
-          value={apellido}
-          onChangeText={setApellido}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Teléfono"
-          keyboardType="phone-pad"
-          value={telefono}
-          onChangeText={setTelefono}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          keyboardType="email-address"
-          value={email}
-          onChangeText={setEmail}
-        />
-
-        <Button title="Registrar" onPress={handleRegistrar} />
+      <View style={styles.contenedorFormulario}>
+        <Text style={styles.titulo}>Error de Contexto</Text>
+        <Text style={{ textAlign: 'center', color: '#6B7280' }}>
+          PerfilScreen debe estar envuelto dentro de AppProvider en App.js.
+        </Text>
       </View>
     );
   }
 
-  // CASO 2: Si SÍ existe un usuario registrado
+  const { usuario, registrarUsuario, iniciarSesion, cerrarSesion } = context;
+
+  const [modoRegistro, setModoRegistro] = useState(false);
+  const [nombre, setNombre] = useState('');
+  const [email, setEmail] = useState('');
+
+  const handleLogin = () => {
+    if (!email.trim()) {
+      Alert.alert('Atención', 'Por favor ingresa tu correo electrónico.');
+      return;
+    }
+
+    const resultado = iniciarSesion(email);
+
+    if (!resultado.exito) {
+      Alert.alert('No encontrado', resultado.mensaje);
+    } else {
+      setEmail('');
+    }
+  };
+
+  const handleRegistro = () => {
+    if (!email.trim() || !nombre.trim()) {
+      Alert.alert('Atención', 'Por favor ingresa tu nombre y correo.');
+      return;
+    }
+
+    const resultado = registrarUsuario({
+      id: Date.now().toString(),
+      nombre: nombre.trim(),
+      email: email.trim(),
+    });
+
+    if (!resultado.exito) {
+      Alert.alert('Error', resultado.mensaje);
+    } else {
+      setNombre('');
+      setEmail('');
+    }
+  };
+
+  if (usuario) {
+    return (
+      <View style={styles.contenedor}>
+        <Text style={styles.titulo}>Mis Datos</Text>
+
+        <View style={styles.tarjeta}>
+          <Text style={styles.label}>Nombre completo:</Text>
+          <Text style={styles.valor}>{usuario.nombre}</Text>
+
+          <Text style={styles.label}>Correo electrónico:</Text>
+          <Text style={styles.valor}>{usuario.email}</Text>
+        </View>
+
+        <Pressable style={styles.botonCerrar} onPress={cerrarSesion}>
+          <Text style={styles.textoBotonCerrar}>Cerrar Sesión</Text>
+        </Pressable>
+      </View>
+    );
+  }
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Mi Perfil</Text>
-
-      <Image source={{ uri: Usuario.foto }} style={styles.avatar} />
-
-      <Text style={styles.label}>
-        Nombre: {Usuario.nombre} {Usuario.apellido}
+    <View style={styles.contenedorFormulario}>
+      <Text style={styles.titulo}>
+        {modoRegistro ? 'Crear Cuenta' : 'Iniciar Sesión'}
       </Text>
 
-      {editando ? (
-        <>
-          <Text style={styles.subLabel}>Email (Editable):</Text>
-          <TextInput
-            style={styles.input}
-            value={editEmail}
-            onChangeText={setEditEmail}
-            keyboardType="email-address"
-          />
-
-          <Text style={styles.subLabel}>Teléfono (Editable):</Text>
-          <TextInput
-            style={styles.input}
-            value={editTelefono}
-            onChangeText={setEditTelefono}
-            keyboardType="phone-pad"/>
-
-          <Button title="Guardar Cambios" onPress={GuardarCambios} />
-        </>
-      ) : (
-        <>
-          <Text style={styles.label}>Email: {Usuario.email}</Text>
-          <Text style={styles.label}>Teléfono: {Usuario.telefono}</Text>
-
-          <Button
-            title="Editar Email y Teléfono"
-            onPress={() => {
-              setEditEmail(Usuario.email);
-              setEditTelefono(Usuario.telefono);
-              setEditando(true);
-            }}
-          />
-        </>
+      {modoRegistro && (
+        <TextInput
+          placeholder="Nombre completo"
+          value={nombre}
+          onChangeText={setNombre}
+          style={styles.input}
+        />
       )}
+
+      <TextInput
+        placeholder="Correo electrónico registrado"
+        value={email}
+        onChangeText={setEmail}
+        autoCapitalize="none"
+        keyboardType="email-address"
+        style={styles.input}
+      />
+
+      {modoRegistro ? (
+        <Pressable style={styles.boton} onPress={handleRegistro}>
+          <Text style={styles.textoBoton}>Registrarse e Ingresar</Text>
+        </Pressable>
+      ) : (
+        <Pressable style={styles.boton} onPress={handleLogin}>
+          <Text style={styles.textoBoton}>Ingresar a Mis Datos</Text>
+        </Pressable>
+      )}
+
+      <Pressable
+        style={styles.botonCambio}
+        onPress={() => setModoRegistro(!modoRegistro)}
+      >
+        <Text style={styles.textoCambio}>
+          {modoRegistro
+            ? '¿Ya tienes cuenta? Inicia sesión aquí'
+            : '¿No tienes cuenta? Regístrate aquí'}
+        </Text>
+      </Pressable>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, justifyContent: "center" },
-  title: {
-    fontSize: 22,
-    fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center",
+  contenedor: { 
+    flex: 1, 
+    padding: 20,
+    backgroundColor: '#FFFFFF', 
+    paddingTop: 60 
   },
-  avatar: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    alignSelf: "center",
-    marginBottom: 20,
+  contenedorFormulario: { 
+    flex: 1, 
+    padding: 20,
+    justifyContent: 'center', // 🟢 CORREGIDO
+    backgroundColor: '#FFFFFF' 
   },
-  input: {
+  titulo: { 
+    fontSize: 24, 
+    fontWeight: 'bold', 
+    marginBottom: 20, 
+    textAlign: 'center' 
+  },
+  tarjeta: { 
+    backgroundColor: '#F9FAFB', 
+    padding: 16,
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 10,
-    marginBottom: 15,
-    borderRadius: 8,
+    borderColor: '#E5E7EB',
+    marginBottom: 20 
   },
-  label: { fontSize: 16, marginBottom: 10 },
-  subLabel: { fontSize: 14, color: "#666", marginTop: 10 },
+  label: { 
+    fontSize: 12, 
+    color: '#6B7280',
+    marginTop: 8 
+  },
+  valor: { 
+    fontSize: 16, 
+    fontWeight: 'bold',
+    color: '#111827' 
+  },
+  input: { 
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    padding: 14, 
+    borderRadius: 10,
+    marginBottom: 14, 
+    fontSize: 16 
+  },
+  boton: { 
+    backgroundColor: '#10ca38',
+    padding: 14, 
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 6 
+  },
+  textoBoton: {
+    color: '#FFFFFF', 
+    fontWeight: 'bold', 
+    fontSize: 16 
+  },
+  botonCerrar: {
+    backgroundColor: '#EF4444', 
+    padding: 14, 
+    borderRadius: 10, 
+    alignItems: 'center' 
+  },
+  textoBotonCerrar: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    fontSize: 16 
+  },
+  botonCambio: {
+    marginTop: 20, 
+    alignItems: 'center' 
+  },
+  textoCambio: { 
+    color: '#10ca38', 
+    fontWeight: 'bold', 
+    fontSize: 14 
+  },
 });
