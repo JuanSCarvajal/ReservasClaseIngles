@@ -3,7 +3,6 @@ import { View, Text, TextInput, Pressable, Alert, StyleSheet } from 'react-nativ
 import { AppContext } from '../context/AppContext';
 
 export default function PerfilScreen() {
-  // Validación de seguridad para evitar que crashee si el Provider no está listo
   const context = useContext(AppContext);
 
   if (!context) {
