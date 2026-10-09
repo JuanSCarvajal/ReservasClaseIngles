@@ -1,11 +1,9 @@
 import React from "react";
-import { registerRootComponent } from "expo";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { ReservaProvider } from "./src/context/ReservasContext";
 import { StatusBar } from "expo-status-bar";
-import ClasesStack from "./src/navigation/ClasesStack";
-import TabNavigation from "./src/navigation/TabNavigation";
+import { AppProvider } from "./src/context/AppContext";
+import MainNavigator from "./src/navigation/ClasesStack"; 
 import { Colors } from "./src/constants/theme";
 
 const temaNavegacion = {
@@ -22,12 +20,12 @@ const temaNavegacion = {
 export default function App() {
   return (
     <SafeAreaProvider>
-      <ReservaProvider>
+      <AppProvider>
         <NavigationContainer theme={temaNavegacion}>
           <StatusBar style="dark" />
-          <TabNavigation/>
+          <MainNavigator />
         </NavigationContainer>
-      </ReservaProvider>
+      </AppProvider>
     </SafeAreaProvider>
   );
 }

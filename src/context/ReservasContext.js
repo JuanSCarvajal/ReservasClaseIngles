@@ -1,76 +1,99 @@
-import React, {useState, useEffect,useCallback, useMemo, createContext} from 'react'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import React, { useState, useEffect, useCallback, useMemo, createContext } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const CLAVE_RESERVAS = '@reserva_ingles'
+const CLAVE_RESERVAS = '@reserva_ingles';
 
-export const ReservasContext = createContext(null)
+export const ReservasContext = createContext(null);
 
-export function ReservaProvider({children}){
-    const [Reservas, setReservas] = useState([])
-    const [Cargando, setCargando]= useState(true)
-    
-    //Cargar las reservas que tengo guardadas sino tengo nada me devuelve un arreglo vacio
-    useEffect(()=>{
-        const cargar = async ()=> {
-            try{
-                const guardado = await AsyncStorage.getItem(CLAVE_RESERVAS)
-                if(guardado != null){
-                    setReservas(JSON.parse(guardado))
-                }
+export function ReservaProvider({ children }) {
+  const [Reservas, setReservas] = useState([]);
+  const [Cargando, setCargando] = useState(true);
 
-            }catch(error){
-                console.log('Error leyendo las reservas: ',error)
-            }finally{
-                setCargando(false)
-            }
+  // Cargar las reservas guardadas al iniciar
+  useEffect(() => {
+    const cargar = async () => {
+      try {
+        const guardado = await AsyncStorage.getItem(CLAVE_RESERVAS);
+        if (guardado !== null) {
+          setReservas(JSON.parse(guardado));
         }
-        cargar()
-    },[])
-
-    useEffect(()=>{
-        if(Cargando )return; //Evita sobreescribir el arreglo
-        AsyncStorage.setItem(CLAVE_RESERVAS, JSON.stringify(Reservas)).catch((error)=>
-            console.log('ocurrio un error guardando la reserva' , error)
-        
-    
-    )
-    },[Reservas, Cargando])
-
-        const agregarReserva = useCallback((clase, horario) => {
-            if (!clase || !horario) return { ok: false, mensaje: 'Datos incompletos' };
-
-        const profeObj = clase.profesor || clase.profesora;
-        const nombreProfe = typeof profeObj === 'object' ? `${profeObj?.nombre || ''} ${profeObj?.apellido || ''}`.trim() : (profeObj || '');
-
-        const nueva = {
-            id: `${clase.id}-${horario}`,
-            claseId: clase.id,
-            titulo: clase.titulo || '',
-            nivel: clase.nivel || '',
-            profesor: nombreProfe,
-            precio: clase.precio || 0,
-            horario,
-            creadaEn: new Date().toISOString(),
+      } catch (error) {
+        console.log('Error leyendo las reservas: ', error);
+      } finally {
+        setCargando(false);
+      }
     };
+    cargar();
+  }, []);
 
-            let resultados = {ok: true}
-            setReservas((previa)=>{
-                if(previa.some((r)=>r.id===nueva.id)){
-                    resultados = {ok: false, mensaje: 'Data duplicada'}
-                    return previa
-                }
-                return[nueva, ...previa]
+  // Guardar en AsyncStorage automáticamente cuando cambie Reservas
+  useEffect(() => {
+    if (Cargando) return;
+    AsyncStorage.setItem(CLAVE_RESERVAS, JSON.stringify(Reservas)).catch((error) =>
+      console.log('Ocurrió un error guardando la reserva:', error)
+    );
+  }, [Reservas, Cargando]);
 
-            })
-            return resultados
+  // Agregar reserva evitando duplicados por ID o por mismo horario
+  const agregarReserva = useCallback((clase, horario) => {
+    if (!clase || !horario) return { ok: false, mensaje: 'Datos incompletos' };
 
+    const profeObj = clase.profesor || clase.profesora;
+    const nombreProfe = typeof profeObj === 'object'
+      ? `${profeObj?.nombre || ''} ${profeObj?.apellido || ''}`.trim()
+      : (profeObj || '');
 
-        },[]) // cierra el callback
+    const idUnico = `${clase.id}-${horario}`;
 
-        const valor = useMemo(
-            ()=>({Reservas,Cargando,agregarReserva}),[Reservas,Cargando,agregarReserva]
-        )
+    // Validar antes del setState para retornar el mensaje correcto a la UI
+    let existeDuplicado = false;
+    setReservas((previa) => {
+      if (previa.some((r) => r.id === idUnico || r.horario === horario)) {
+        existeDuplicado = true;
+        return previa;
+      }
 
-        return <ReservasContext.Provider value={valor}>{children}</ReservasContext.Provider>
+      const nueva = {
+        id: idUnico,
+        claseId: clase.id,
+        titulo: clase.titulo || clase.título || '',
+        nivel: clase.nivel || '',
+        profesor: nombreProfe,
+        precio: clase.precio || 0,
+        horario,
+        creadaEn: new Date().toISOString(),
+      };
 
-}//llave de cierre para la funcion
+      return [nueva, ...previa];
+    });
+
+    if (existeDuplicado) {
+      return { ok: false, mensaje: 'Ya tienes una clase reservada en este horario' };
+    }
+
+    return { ok: true };
+  }, []);
+
+  // Eliminar / Cancelar reserva por ID
+  const eliminarReserva = useCallback((idReserva) => {
+    setReservas((previas) => previas.filter((reserva) => reserva.id !== idReserva));
+    return { ok: true };
+  }, []);
+
+  // Memoizar el objeto del contexto
+  const valor = useMemo(
+    () => ({
+      Reservas,
+      Cargando,
+      agregarReserva,
+      eliminarReserva,
+    }),
+    [Reservas, Cargando, agregarReserva, eliminarReserva]
+  );
+
+  return (
+    <ReservasContext.Provider value={valor}>
+      {children}
+    </ReservasContext.Provider>
+  );
+}
