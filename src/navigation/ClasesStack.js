@@ -16,7 +16,7 @@ function StackInterno() {
   return (
     <Stack.Navigator
       screenOptions={{
-        headerBackButtonMenuEnabled: false, // 🟢 Previene el conflicto al desmontar la pantalla nativa
+        headerBackButtonMenuEnabled: false, 
       }}
     >
       <Stack.Screen
